@@ -1,3 +1,5 @@
+import "./App.css"
+
 //Importa hhook useState da biblioteca React
 //Ele permite armazenar valores e atualizar a tela automaticamente
 import { useState } from "react";
@@ -15,52 +17,40 @@ function App(){
 
   const [umidade, setUmidade] = useState ("");
 
-  // Função executada quando o usuario clicar no botão consultar
-  function consultarClima () {
+  //Função executad aqundo usuario clicar no botão consultar
+  async function consultarClima(){
 
-  //Verifica se a cidade digitada é sao paulo
-    if(
-      cidade.toLowerCase() === "são paulo" || 
-      cidade.toLowerCase() === "são paulo" 
-
-    ) {
-
-      //Atualiza a temperatura
-      setTemperatura("24°C");
-
-      //Atualiza a condição climatica
-      setClima("Chuvoso");
-
-      //Atualiza a umidade
-      setUmidade("60%");
+    //verifica se o campo esta vazio
+    if(cidade === ""){
+      alert("Digite uma cidade! ");
+      return; 
     }
-    else if(cidade.toLowerCase() === "curitiba"){
+    try{
 
-      setTemperatura("10°C");
-      setClima("Ensolarado");
-      setUmidade("85%")
+      const resposta = await fetch( `https://api.openweathermap.org/data/2.5/weather?q=${cidade}&appid=cc3058fb62e66fcd73e91f5bd6bc04eb&units=metric&lang=pt_br`)
 
-    }
-    else if(cidade.toLowerCase() === "rio de janeiro"){
+      const dados = await resposta.json();
 
-      setTemperatura("10°C");
-      setClima("Ensolarado");
-      setUmidade("85%")
-      
+    if (dados.cod !== 200){
+      alert("Cidade não encontrada!");
+      return;
     }
-    else if(cidade.toLowerCase() === "santa catarina"){
+      setTemperatura(dados.main.temp + "°C")
+ 
+      setClima(dados.weather[0].description)
+ 
+      setUmidade(dados.main.humidity + "%")
 
-      setTemperatura("10°C");
-      setClima("Ensolarado");
-      setUmidade("85%")
-      
+    } catch(erro){
+      console.log(erro)
+      alert("Erro ao consultar a API.")
     }
-    else{
-      setTemperatura("--")
-      setClima("Cidade não cadastrada")
-      setUmidade("--")
-    }
-  };
+    
+ }
+ 
+ 
+
+
 
   //Retorna a interface visual do sistema
   return (
@@ -72,17 +62,15 @@ function App(){
 
       {}
       <input 
-      //Tipo do campo
-      type="text" 
+  type="text" 
+  placeholder="Digite uma cidade 😍" 
+  value={cidade} 
+  onChange={(e) => setCidade(e.target.value)} 
+  
+  // ADICIONE APENAS ESSA LINHA ABAIXO:
+  onKeyDown={(e) => e.key === "Enter" && consultarClima()} 
+/>
 
-      //Texto exibido dentro da casa
-      placeholder= "Digite uma cidade 😍" 
-      
-      //valor vinculado ao estado cidade
-      value={cidade} 
-
-      //Atualiza o estado quqando o usuario digita
-      onChange={(e) =>setCidade(e.target.value)} />
 
       
       <button 
@@ -97,10 +85,10 @@ function App(){
 
       <hr />
 
-      <h2>Cidade: {cidade}</h2>
-      <h2>Clima: {clima}</h2>
-      <h2>Temperatura: {temperatura}</h2>
-      <h2>Umidade: {umidade}</h2>
+      <h2>{cidade}</h2>
+      <h2>{clima}</h2>
+      <h2>{temperatura}</h2>
+      <h2>{umidade}</h2>
 
     </div>
   )
