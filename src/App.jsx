@@ -41,6 +41,38 @@ function App(){
  
       setUmidade(dados.main.humidity + "%")
 
+    //Enviando dados do react para uma api propria utilizando metodo post 
+
+    // Faz uma requisição para a API de histórico criada pelos alunos
+await fetch("http://localhost:3000/historico", {
+ 
+  // Define o método HTTP utilizado
+  method: "POST",
+ 
+  // Informa que os dados enviados estarão no formato JSON
+  headers: {
+    "Content-Type": "application/json"
+  },
+ 
+  // Converte o objeto JavaScript para JSON
+  body: JSON.stringify({
+ 
+    // Envia o nome da cidade consultada
+    cidade: cidade,
+ 
+    // Envia a temperatura retornada pela API OpenWeatherMap
+    temperatura: dados.main.temp + "°C",
+ 
+    // Envia a descrição do clima
+    clima: dados.weather[0].description,
+ 
+    // Envia a umidade do ar
+    umidade: dados.main.humidity + "%"
+ 
+  })
+ 
+});
+
     } catch(erro){
       console.log(erro)
       alert("Erro ao consultar a API.")
