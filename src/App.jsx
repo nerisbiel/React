@@ -83,7 +83,6 @@ function App() {
       <header className="topbar">
         <a className="wordmark" href="/" aria-label="Atmos — início">
           <span className="wordmark-icon" aria-hidden="true">A</span>
-          <span>ATMOS</span>
         </a>
         <span className="topbar-note">CLIMA, EM TEMPO REAL</span>
       </header>
@@ -108,7 +107,7 @@ function App() {
               <input
                 id="cidade"
                 type="text"
-                placeholder="Ex.: Lisboa, Portugal"
+                placeholder="Ex.: São Paulo, Brasil"
                 value={cidade}
                 onChange={(event) => setCidade(event.target.value)}
                 autoComplete="off"

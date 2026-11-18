@@ -1,157 +1,490 @@
-@import url('https://googleapis.com');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
-/* 1. CONFIGURAÇÃO DE TELA E CENTRALIZAÇÃO */
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background-color: #f4f6f9 !important; /* Fundo claro geral */
-  font-family: 'Inter', -apple-system, sans-serif !important;
-  -webkit-font-smoothing: antialiased;
+:root {
+  --sans: 'Plus Jakarta Sans', sans-serif;
 }
 
-#root, body {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
+#root {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border: none !important;
+  text-align: left !important;
+  padding: 0;
+}
+
+.app-shell {
+  --ink: #ffffff;
+  --muted: rgba(255, 255, 255, 0.7);
+  --line: rgba(255, 255, 255, 0.12);
+  --gold: #38bdf8; /* Azul tecnológico como destaque padrão */
+  
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  overflow-x: hidden;
+  isolation: isolate;
+  padding: 0 clamp(20px, 5vw, 80px);
+  color: var(--ink);
+  font-family: var(--sans);
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #090d16 100%);
+  transition: background 1s ease;
+}
+
+/* Temas dinâmicos baseados no clima */
+[data-weather="clear"] {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0c4a6e 100%);
+  --gold: #fde047;
+}
+
+[data-weather="clouds"] {
+  background: linear-gradient(135deg, #334155 0%, #475569 50%, #1e293b 100%);
+  --gold: #cbd5e1;
+}
+
+[data-weather="rain"] {
+  background: linear-gradient(135deg, #1e3a8a 0%, #172554 50%, #0f172a 100%);
+  --gold: #38bdf8;
+}
+
+[data-weather="storm"] {
+  background: linear-gradient(135deg, #311042 0%, #1e1b4b 50%, #090514 100%);
+  --gold: #c084fc;
+}
+
+[data-weather="snow"] {
+  background: linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%);
+  --gold: #e2e8f0;
+}
+
+[data-weather="mist"] {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 50%, #1f2937 100%);
+  --gold: #9ca3af;
+}
+
+.atmosphere {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.atmosphere::before {
+  position: absolute;
+  content: "";
+  top: -10%;
+  right: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.celestial {
+  position: absolute;
+  top: 15%;
+  right: 15%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.1) 60%, transparent 100%);
+  box-shadow: 0 0 50px rgba(255, 255, 255, 0.2);
+  transition: all 0.8s ease;
+}
+
+[data-weather="rain"] .celestial,
+[data-weather="storm"] .celestial,
+[data-weather="clouds"] .celestial {
+  opacity: 0.3;
+  transform: scale(0.8);
+}
+
+.horizon {
+  display: none;
+}
+
+.topbar,
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.topbar {
+  min-height: 80px;
+  border-bottom: 1px solid var(--line);
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-decoration: none;
+}
+
+.wordmark-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: var(--gold);
+  font-size: 18px;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+.topbar-note,
+.footer {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+.weather-layout {
+  display: grid;
+  width: 100%;
+  max-width: 1200px;
+  flex: 1;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+  gap: 60px;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+
+.intro {
+  max-width: 560px;
+}
+
+.eyebrow,
+.search-label,
+.weather-caption {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.intro h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(42px, 5vw, 68px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.intro-copy {
+  margin: 20px 0 40px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.search-form {
   width: 100%;
 }
 
-/* CONTAINER PRINCIPAL DO JSX */
-div[style*="padding: 20px"] {
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  width: 90% !important;
-  max-width: 440px !important;
-  text-align: center !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  flex-direction: column !important;
+.search-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--ink);
 }
 
-/* Título superior do sistema */
-div[style*="padding: 20px"] > h1 {
-  color: #5c677d !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 1.5px !important;
-  margin-bottom: 20px !important;
-  margin-top: 0 !important;
+.search-control {
+  display: flex;
+  min-height: 60px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
-/* 2. CAMPOS DE BUSCA VISÍVEIS (Ficam organizados no topo do card) */
-div[style*="padding: 20px"] > input[type="text"] {
-  width: 100% !important;
-  padding: 12px 14px !important;
-  background-color: #ffffff !important;
-  border: 1px solid #dcdcdc !important;
-  border-radius: 14px !important;
-  font-size: 14px !important;
-  color: #333333 !important;
-  outline: none !important;
-  box-sizing: border-box !important;
-  text-align: center !important;
-  margin-bottom: 10px !important;
+.search-control:focus-within {
+  border-color: var(--gold);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
 }
 
-div[style*="padding: 20px"] > input[type="text"]:focus {
-  border-color: #0076ff !important;
+.search-icon {
+  display: grid;
+  width: 50px;
+  place-items: center;
+  color: var(--muted);
 }
 
-div[style*="padding: 20px"] > input[type="text"]::placeholder {
-  color: #999999 !important;
+.search-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
 }
 
-/* Botão Consultar posicionado abaixo do input */
-div[style*="padding: 20px"] > button {
-  width: 100% !important;
-  background-color: #0076ff !important;
-  color: #ffffff !important;
-  border: none !important;
-  padding: 12px !important;
-  border-radius: 14px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  margin-left: 0 !important;
-  margin-bottom: 25px !important; /* Espaço para não encostar no card de resultados */
-  transition: background-color 0.2s !important;
+.search-control input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
 }
 
-div[style*="padding: 20px"] > button:hover {
-  background-color: #005ecb !important;
+.search-control input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
-div[style*="padding: 20px"] > hr {
-  display: none !important;
+.search-control button {
+  display: flex;
+  height: 46px;
+  align-items: center;
+  gap: 8px;
+  margin: 0 7px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 12px;
+  color: #0f172a;
+  background: var(--gold);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-/* 3. CONTAINER EXCLUSIVO PARA O CARD DE RESULTADOS HORIZONTAL */
-/* Usamos este seletor para encapsular as tags h2 dentro de um bloco flexível próprio */
-div[style*="padding: 20px"] {
-  display: flex !important;
-  flex-direction: column !important;
+.search-control button:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
 }
 
-/* Criamos a estrutura de caixa para o bloco que contém os h2 de resposta */
-div[style*="padding: 20px"] > input ~ h2 {
-  font-size: 0 !important; /* Reseta textos fixos antigos */
+.search-control button:disabled {
+  cursor: wait;
+  opacity: 0.6;
 }
 
-/* CONSTRUÇÃO DO RETÂNGULO WIDGET BRANCO */
-/* Mudamos o alvo do pseudo-elemento para ele renderizar de forma estática abaixo dos botões */
-div[style*="padding: 20px"] > input ~ h2:nth-of-type(1) {
-  margin-top: 10px !important;
-  background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
-  border-radius: 24px !important;
-  padding: 25px 24px !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  text-align: left !important;
+.error-message {
+  margin: 10px 0 0;
+  color: #f87171;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-/* CONFIGURAÇÃO DO LADO ESQUERDO (Cidade) */
-div[style*="padding: 20px"] > input ~ h2:nth-of-type(1) {
-  font-size: 15px !important;
-  font-weight: 400 !important;
-  color: #4a4a4a !important;
-  line-height: 1.4 !important;
-}
-div[style*="padding: 20px"] > input ~ h2:nth-of-type(1)::before {
-  content: "Minha Localização\a" !important;
-  white-space: pre !important;
-  font-size: 22px !important;
-  font-weight: 600 !important;
-  color: #1c1c1e !important;
-}
-
-/* Oculta a linha do clima instável */
-div[style*="padding: 20px"] > input ~ h2:nth-of-type(2) {
-  display: none !important;
+.weather-card {
+  width: 100%;
+  max-width: 440px;
+  justify-self: center;
+  box-sizing: border-box;
+  padding: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  animation: card-arrive 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* CONFIGURAÇÃO DO LADO DIREITO (Temperatura Gigante e Alinhada) */
-div[style*="padding: 20px"] > input ~ h2:nth-of-type(3) {
-  position: absolute !important;
-  right: 24px !important;
-  bottom: 30px !important;
-  font-size: 52px !important; /* Tamanho proporcional perfeito */
-  font-weight: 200 !important; /* Fonte bem fina como no iOS */
-  color: #1c1c1e !important;
-  letter-spacing: -1px !important;
+.card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  font-weight: 600;
 }
 
-/* CONFIGURAÇÃO DA UMIDADE NA BASE DIREITA */
-div[style*="padding: 20px"] > input ~ h2:nth-of-type(4) {
-  position: absolute !important;
-  right: 26px !important;
-  bottom: 15px !important;
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  color: #8e8e93 !important;
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.live-indicator > span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 10px #4ade80;
+}
+
+.card-location {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.current-weather {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 36px 0 28px;
+}
+
+.weather-caption {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.condition {
+  margin: 0;
+  color: var(--ink);
+  font-size: 26px;
+  font-weight: 700;
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+
+.temperature {
+  margin: 0;
+  color: var(--ink);
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.temperature span {
+  margin-left: 2px;
+  color: var(--gold);
+  font-size: 24px;
+  vertical-align: super;
+}
+
+.card-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 20px 0;
+}
+
+.weather-detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.detail-mark {
+  color: var(--gold);
+  font-size: 18px;
+}
+
+.weather-detail strong {
+  margin-left: auto;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card-footnote {
+  margin: 24px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.empty-note {
+  justify-self: center;
+  text-align: center;
+  padding: 40px;
+  border-radius: 24px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.empty-note p {
+  margin: 12px 0 0;
+}
+
+.empty-line {
+  display: inline-block;
+  width: 40px;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+.footer {
+  min-height: 70px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+}
+
+.footer-dot {
+  padding: 0 6px;
+  color: var(--gold);
+}
+
+@keyframes card-arrive {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .weather-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 30px 0;
+  }
+
+  .intro {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .search-form {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .weather-card {
+    max-width: 100%;
+  }
 }
